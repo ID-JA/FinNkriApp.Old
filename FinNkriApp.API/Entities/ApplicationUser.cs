@@ -6,6 +6,8 @@ public class ApplicationUser : IdentityUser
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string ImageUrl { get; set; }
+    public bool IsHouseOwner { get; set; } = false;
+
 
     public virtual ICollection<Post> Posts { get; set; }
     public virtual ICollection<Rating> Ratings { get; set; }

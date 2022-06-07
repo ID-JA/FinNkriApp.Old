@@ -54,12 +54,14 @@ namespace FinNkriApp.API.Data
         {
             // Default roles
             var administratorRole = new IdentityRole("Administrator");
+            var memberRole = new IdentityRole("Member");
 
-            if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+            if (_roleManager.Roles.All(r => r.Name != administratorRole.Name) && _roleManager.Roles.All(r => r.Name != memberRole.Name))
             {
                 await _roleManager.CreateAsync(administratorRole);
+                await _roleManager.CreateAsync(memberRole);
             }
-
+            
             // Default users
             var administrator = new ApplicationUser
             {

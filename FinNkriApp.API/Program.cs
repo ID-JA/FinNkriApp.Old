@@ -9,45 +9,50 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using System.Reflection;
+using FinNkriApp.API.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
-builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+{
+    builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+    builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+    builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
-builder.Services.AddScoped<AuditableEntitySaveChangesInterceptor>();
+    builder.Services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
             builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+    builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-builder.Services.AddScoped<ApplicationDbContextInitialiser>();
+    builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>()
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    builder.Services.AddDefaultIdentity<ApplicationUser>()
+        .AddRoles<IdentityRole>()
+        .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddIdentityServer()
-    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+    builder.Services.AddIdentityServer()
+        .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
 
-builder.Services.AddTransient<IDateTime, DateTimeService>();
+    builder.Services.AddTransient<IDateTime, DateTimeService>();
+    builder.Services.AddTransient<IIdentityService, IdentityService>();
+    builder.Services.AddScoped<ITokenClaimsService, IdentityTokenClaimService>();
+    
+    builder.Services.AddAuthentication()
+        .AddIdentityServerJwt();
 
-builder.Services.AddAuthentication()
-    .AddIdentityServerJwt();
-
-builder.Services.AddAuthorization(options =>
-    options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
+    builder.Services.AddAuthorization(options =>
+        options.AddPolicy("CanPurge", policy => policy.RequireRole("Administrator")));
 
 
-builder.Services.AddControllers();
+    builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+}
 
 var app = builder.Build();
 

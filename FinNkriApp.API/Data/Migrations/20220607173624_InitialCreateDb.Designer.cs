@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinNkriApp.API.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220605203308_InitialCreateDb")]
+    [Migration("20220607173624_InitialCreateDb")]
     partial class InitialCreateDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -191,6 +191,9 @@ namespace FinNkriApp.API.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsHouseOwner")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
